@@ -55,14 +55,14 @@ def create_pr(credential, region, reference="default", datatype="tools"):
                 "filters" : [{"field":"project","condition":"==","condition_value":credential.split(":")[0],"filter_type":"exact_match"}]
             }
         )
-    
+        
     if RELEVANCE_PUBLIC_ONLY:
-        list_of_results = [r for r in response.json()['results'] if r['public'] ]
+        list_of_results = [r for r in response.json()['results'] if 'public' in r and r['public'] ]
     else:
         list_of_results = response.json()['results']
     gh = Github(os.environ["GITHUB_TOKEN"])
     repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
-    new_branch_name = f"feature/{make_valid_ref_name(current_timestamp)}"
+    new_branch_name = f"feature/{make_valid_ref_name(current_timestamp + reference + datatype)}"
     new_branch = repo.create_git_ref(
         ref=f"refs/heads/{new_branch_name}", 
         sha=repo.get_branch("main").commit.sha
