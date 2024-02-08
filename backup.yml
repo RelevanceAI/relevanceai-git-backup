@@ -25,6 +25,6 @@ jobs:
       - name: Backup Tools JSON
         env:
           RELEVANCE_REGION: ${{ secrets.RELEVANCE_REGION }}
-          RELEVANCE_API_KEY: ${{ secrets.RELEVANCE_API_KEY }}
+          RELEVANCE_AUTH_TOKEN: ${{ secrets.RELEVANCE_AUTH_TOKEN }}
         run: |
           python backup.py

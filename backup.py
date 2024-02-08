@@ -7,7 +7,7 @@ import datetime
 from datetime import date
 from github import Github
 
-RELEVANCE_API_KEY = os.environ["RELEVANCE_API_KEY"]
+RELEVANCE_AUTH_TOKEN = os.environ["RELEVANCE_AUTH_TOKEN"]
 RELEVANCE_REGION = os.environ["RELEVANCE_REGION"]
 
 os.makedirs("templates", exist_ok=True)
@@ -126,5 +126,5 @@ def create_pr(credential, region, reference="default", datatype="tools"):
 
     pull_request.merge()
 
-create_pr(RELEVANCE_API_KEY, RELEVANCE_REGION, datatype="tools")
-create_pr(RELEVANCE_API_KEY, RELEVANCE_REGION, datatype="agents")
+create_pr(RELEVANCE_AUTH_TOKEN, RELEVANCE_REGION, datatype="tools")
+create_pr(RELEVANCE_AUTH_TOKEN, RELEVANCE_REGION, datatype="agents")
