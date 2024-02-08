@@ -26,9 +26,11 @@ def make_valid_ref_name(name):
 def clean_filename(f, datatype):
     if datatype == "tools":
         title = f["title"]
+        uid = f["studio_id"]
     elif datatype == "agents":
         title = f["name"]
-    return re.sub(r"[^\w\-_.]", "_", title).lower() + f'--{f["studio_id"].replace("/", "_").replace(".", "_").replace(":", "_")}.json'
+        uid = f["agent_id"]
+    return re.sub(r"[^\w\-_.]", "_", title).lower() + f'--{uid.replace("/", "_").replace(".", "_").replace(":", "_")}.json'
 
 def unclean_filename(f):
     return re.sub(r"[\-_.]", " ", f.split("--")[0]).title() 
