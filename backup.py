@@ -23,7 +23,7 @@ def make_valid_ref_name(name):
     return name
 
 def clean_filename(f):
-    return re.sub(r"[^\w\-_.]", "_", f["title"]).lower() + f'--{f["studio_id"]}.json'
+    return re.sub(r"[^\w\-_.]", "_", f["title"]).lower() + f'--{f["studio_id"].replace("/", "_")}.json'
 
 def unclean_filename(f):
     return re.sub(r"[\-_.]", " ", f.split("--")[0]).title() 
