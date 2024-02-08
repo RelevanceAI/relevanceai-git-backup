@@ -9,6 +9,7 @@ from github import Github
 
 RELEVANCE_AUTH_TOKEN = os.environ["RELEVANCE_AUTH_TOKEN"]
 RELEVANCE_REGION = os.environ["RELEVANCE_REGION"]
+RELEVANCE_PUBLIC_ONLY = os.getenv("RELEVANCE_PUBLIC_ONLY", "true").lower() == "true"
 
 os.makedirs("templates", exist_ok=True)
 os.makedirs("archive", exist_ok=True)
@@ -23,7 +24,7 @@ def make_valid_ref_name(name):
     return name
 
 def clean_filename(f):
-    return re.sub(r"[^\w\-_.]", "_", f["title"]).lower() + f'--{f["studio_id"].replace("/", "_")}.json'
+    return re.sub(r"[^\w\-_.]", "_", f["title"]).lower() + f'--{f["studio_id"].replace("/", "_").replace(".", "_").replace(":", "_")}.json'
 
 def unclean_filename(f):
     return re.sub(r"[\-_.]", " ", f.split("--")[0]).title() 
@@ -46,7 +47,7 @@ def create_pr(credential, region, reference="default", datatype="tools"):
         )
     elif datatype == "agents":
         url = f"https://api-{region}.stack.tryrelevance.com/latest/agents/list"
-        response = requests.get(
+        response = requests.post(
             url, 
             headers={"Authorization" : credential}, 
             params={
@@ -54,8 +55,11 @@ def create_pr(credential, region, reference="default", datatype="tools"):
                 "filters" : [{"field":"project","condition":"==","condition_value":credential.split(":")[0],"filter_type":"exact_match"}]
             }
         )
-        
-    list_of_results = [r for r in response.json()['results'] if r['public'] ]
+    
+    if RELEVANCE_PUBLIC_ONLY:
+        list_of_results = [r for r in response.json()['results'] if r['public'] ]
+    else:
+        list_of_results = response.json()['results']
     gh = Github(os.environ["GITHUB_TOKEN"])
     repo = gh.get_repo(os.environ["GITHUB_REPOSITORY"])
     new_branch_name = f"feature/{make_valid_ref_name(current_timestamp)}"
