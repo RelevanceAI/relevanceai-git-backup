@@ -23,8 +23,12 @@ def make_valid_ref_name(name):
     name = re.sub(r"[^\w-]", "", name)
     return name
 
-def clean_filename(f):
-    return re.sub(r"[^\w\-_.]", "_", f["title"]).lower() + f'--{f["studio_id"].replace("/", "_").replace(".", "_").replace(":", "_")}.json'
+def clean_filename(f, datatype):
+    if datatype == "tools":
+        title = f["title"]
+    elif datatype == "agents":
+        title = f["name"]
+    return re.sub(r"[^\w\-_.]", "_", title).lower() + f'--{f["studio_id"].replace("/", "_").replace(".", "_").replace(":", "_")}.json'
 
 def unclean_filename(f):
     return re.sub(r"[\-_.]", " ", f.split("--")[0]).title() 
@@ -69,7 +73,7 @@ def create_pr(credential, region, reference="default", datatype="tools"):
     )
     current_list = []
     for obj in list_of_results:
-        current_list.append(clean_filename(obj))
+        current_list.append(clean_filename(obj, datatype=datatype))
 
     # Check if the file requires archiving
     print(f"Checking for files to archive in {reference}")
@@ -93,7 +97,7 @@ def create_pr(credential, region, reference="default", datatype="tools"):
     for i, obj in enumerate(list_of_results):
         if "metrics" in obj: del obj["metrics"]
         if "update_date_" in obj: del obj["update_date_"]
-        file = clean_filename(obj)
+        file = clean_filename(obj, datatype=datatype)
         filepath = f"{templates_folder}/{file}"
         file_exists = False
         if os.path.exists(filepath):
